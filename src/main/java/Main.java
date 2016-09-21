@@ -2,6 +2,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,7 +22,7 @@ public class Main {
             Menu dish4 = new Menu("Banana", 14, 0.25);
             Menu dish5 = new Menu("Spageti", 45, 0.2);
             Menu dish6 = new Menu("Soup", 55, 0.3);
-            Menu dish7 = new Menu("Bread", 55, 0.1);
+            Menu dish7 = new Menu("Bread", 15, 0.1);
 
             entityManager.persist(dish1);
             entityManager.persist(dish2);
@@ -52,6 +55,15 @@ public class Main {
             for (Menu dish : menuList) {
                 System.out.println(dish);
             }
+            System.out.println();
+
+            CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+            CriteriaQuery<Menu> criteriaQuery = criteriaBuilder.createQuery(Menu.class);
+            Root<Menu> r = criteriaQuery.from(Menu.class);
+            criteriaQuery.select(r).where(criteriaBuilder.between(r.get("price"), 20, 60));
+            entityManager.createQuery(criteriaQuery).getResultList()
+                    .forEach(System.out::println);
+
         } finally {
             entityManager.close();
             entityManagerFactory.close();
